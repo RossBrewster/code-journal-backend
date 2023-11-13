@@ -22,25 +22,36 @@ if (localData) {
   data = JSON.parse(localData);
 }
 
-export function readEntries(): Entry[] {
-  return data.entries;
+export async function readEntries(): Promise<Entry[]> {
+    const req = await fetch('/api/entries');
+    const parsedResponse = await req.json();
+    return parsedResponse
 }
 
-export function addEntry(entry: UnsavedEntry): Entry {
-  const newEntry = {
-    ...entry,
-    entryId: data.nextEntryId++,
-  };
-  data.entries.unshift(newEntry);
-  return newEntry;
+export async function addEntry(entry: UnsavedEntry): Promise<Entry>{
+  const req = await fetch('/api/entries', {
+    method: "POST",
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify(entry)
+  })
+  const responseEntry = await req.json()
+  console.log("response", responseEntry)
+  return responseEntry;
 }
 
-export function updateEntry(entry: Entry): Entry {
-  const newEntries = data.entries.map((e) =>
-    e.entryId === entry.entryId ? entry : e
-  );
-  data.entries = newEntries;
-  return entry;
+export async function updateEntry(entry: Entry): Entry {
+  console.log(entry)
+  const req = await fetch(`/api/entries/${entry.entryId}`, {
+    method: "PUT",
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify(entry)
+  })
+  const response = await req.json()
+  return response;
 }
 
 export function removeEntry(entryId: number): void {

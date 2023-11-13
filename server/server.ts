@@ -19,6 +19,7 @@ app.get('/api/entries', async (req, res, next) => {
     const sql = `
       select *
       from entries
+      order by "entryId";
     `;
     const result = await db.query(sql);
     const entries = result.rows;
