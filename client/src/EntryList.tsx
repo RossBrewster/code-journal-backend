@@ -1,12 +1,23 @@
 import { FaPencilAlt } from 'react-icons/fa';
-import { Entry, readEntries } from './data';
+import { Entry } from './data';
+import { useEffect, useState } from 'react';
 
 type Props = {
   onCreate: () => void;
   onEdit: (entry: Entry) => void;
 };
 export default function EntryList({ onCreate, onEdit }: Props) {
-  const entries = readEntries();
+  useEffect(() => {
+    // Fetch the entries from the server, and update the useState entries to reflect the response
+    async function getEntries() {
+      const req = await fetch('/api/entries');
+      const parsedResponse = await req.json();
+      setEntries(parsedResponse);
+    }
+    getEntries();
+  }, []);
+  const [entries, setEntries] = useState<Entry[]>([]);
+
   return (
     <div className="container">
       <div className="row">
